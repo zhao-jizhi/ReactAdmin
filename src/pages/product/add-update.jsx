@@ -12,6 +12,7 @@ import LinkButton from '../../components/link-button'
 import {reqCategorys, reqAddUpdateProduct} from "../../api";
 import PicturesWall from './pictures-wall'
 import RichTextEditor from './rich-text-editor'
+import memoryUtils from "../../utils/memoryUtils";
 
 const {Item} = Form
 const {TextArea} = Input
@@ -128,10 +129,14 @@ export default class ProductAddUpdate extends Component{
 
     componentWillMount () {
         //取出携带的state
-        const product = this.props.location.state
+        const product = memoryUtils.product
         //保存是否是更新标识
-        this.isUpdate = !!product
+        this.isUpdate = !!product._id
         this.product = product || {}
+    }
+
+    componentWillUnmount () {
+        memoryUtils.product = {}
     }
     render () {
         const {isUpdate, product} = this

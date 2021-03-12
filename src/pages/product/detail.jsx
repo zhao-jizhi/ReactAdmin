@@ -7,6 +7,7 @@ import {ArrowLeftOutlined} from '@ant-design/icons'
 import LinkButton from '../../components/link-button'
 import {BASE_IMG_URL} from '../../utils/constents'
 import {reqCategory} from "../../api";
+import memoryUtils from "../../utils/memoryUtils";
 
 const Item = List.Item
 
@@ -16,7 +17,7 @@ export default class ProductDetail extends Component {
         cName2: ''// 二级分类名称
     }
     async componentDidMount () {
-        const {pCategoryId, categoryId} = this.props.location.state.product
+        const {pCategoryId, categoryId} = memoryUtils.product
         if (pCategoryId === '0') {
             const result = await reqCategory(categoryId)
             const cName1 = result.data.name
@@ -28,6 +29,9 @@ export default class ProductDetail extends Component {
             this.setState({cName1, cName2})
         }
     }
+    componentWillUnmount () {
+        memoryUtils.product = {}
+    }
     render () {
         const title = (
             <span>
@@ -37,7 +41,8 @@ export default class ProductDetail extends Component {
                 <span>商品详情</span>
             </span>
         )
-        const {name, desc, price, detail, imgs} = this.props.location.state.product
+        const {name, desc, price, detail, imgs} = memoryUtils.product
+        console.log(memoryUtils.product)
         const {cName1, cName2} = this.state
         return (
             <Card title={title} className='product-detail'>

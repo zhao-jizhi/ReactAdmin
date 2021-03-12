@@ -1,7 +1,9 @@
 import React,{Component} from 'react'
 import {withRouter} from 'react-router-dom'
 import { Modal} from 'antd';
+import {connect} from 'react-redux'
 
+import {logout} from "../../redux/actions";
 import LinkButton from '../../components/link-button'
 import {formateDate} from "../../utils/dataUtils";
 import memoryUtils from '../../utils/memoryUtils'
@@ -29,7 +31,7 @@ class Header extends Component{
         this.setState({weather})
     }
     // 获取当前页面所对应的标题
-    getTitle = () => {
+    /*getTitle = () => {
         const path = this.props.location.pathname
         let title
         menuList.forEach(item => {
@@ -43,16 +45,16 @@ class Header extends Component{
             }
         })
         return title
-    }
+    }*/
     // 退出登陆
     Logout = () => {
         Modal.confirm({
             content: '确认退出登陆？',
             onOk:() => {
-                // console.log('OK');
+                /*// console.log('OK');
                 storageUtils.removeUser()
-                memoryUtils.user = {}
-                this.props.history.replace('/login')
+                this.props.history.replace('/login')*/
+                this.props.logout()
             }
         });
     }
@@ -67,8 +69,9 @@ class Header extends Component{
     }
     render () {
         const {currentTime, weather} = this.state
-        const username = memoryUtils.user.username
-        const title = this.getTitle()
+        const username = this.props.user.username
+        // const title = this.getTitle()
+        const title = this.props.headTitle
         return (
             <div className='header'>
                 <div className='header-top'>
@@ -86,4 +89,7 @@ class Header extends Component{
         )
     }
 }
-export default withRouter(Header)
+export default connect(
+    state => ({headTitle: state.headTitle, user: state.user}),
+    {logout}
+)(withRouter(Header))

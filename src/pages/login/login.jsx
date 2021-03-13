@@ -3,19 +3,22 @@ import {Redirect} from 'react-router-dom'
 import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import './login.less'
+import {connect} from 'react-redux'
+import {login} from "../../redux/actions";
 import logo from '../../assets/images/logo.png'
-import {reqLogin} from '../../api'
-import memoryUtils from '../../utils/memoryUtils'
-import storageUtils from '../../utils/storageUtils'
+// import {reqLogin} from '../../api'
+// import memoryUtils from '../../utils/memoryUtils'
+// import storageUtils from '../../utils/storageUtils'
 
 /*
 登陆的路由组件
  */
-export default class Login extends Component {
+class Login extends Component {
     onFinish = async (values) => {
         // console.log('接收到的数据为', values)
         const {username, password} = values
-        const result = await reqLogin(username, password)
+        this.props.login(username, password)
+        /*const result = await reqLogin(username, password)
         // console.log('请求成功', response.data)
         if(result.status === 0) {
             message.success('登陆成功')
@@ -23,15 +26,15 @@ export default class Login extends Component {
             const user = result.data
             memoryUtils.user = user
             storageUtils.saveUser(user)
-            this.props.history.replace('/')
+            this.props.history.replace('/home')
         }else{
             message.error(result.msg)
-        }
+        }*/
     }
     render () {
-        const user = <memoryUtils className="user"></memoryUtils>
+        const user = this.props.user
         if (user._id) {
-            return <Redirect to='/' />
+            return <Redirect to='/home' />
         }
         return (
             <div className="login">
@@ -40,6 +43,7 @@ export default class Login extends Component {
                     <h1>React项目：后台管理系统</h1>
                 </header>
                 <section className="login-content">
+                    <div className={user.errorMsg ? 'error-msg show' : 'error-msg'}>{user.errorMsg}</div>
                     <h2>用户登陆</h2>
                     <Form className="login-form" onFinish={this.onFinish} initialValues={{username:'admin'}}>
                         <Form.Item
@@ -91,3 +95,8 @@ export default class Login extends Component {
         )
     }
 }
+
+export default connect(
+    state => ({user: state.user}),
+    {login}
+)(Login)
